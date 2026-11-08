@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ゆとりログ</title>
+<meta name="description" content="毎日のコンディションを記録し、心身の変化や仕事の負荷に早めに気づくためのセルフチェックアプリ">
+<meta name="theme-color" content="#eaf2eb">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main id="app" class="wrap" tabindex="-1"></main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<nav class="tabbar" aria-label="メインメニュー">
+  <a href="#/home" data-nav="home"><span class="ico" aria-hidden="true">⌂</span>ホーム</a>
+  <a href="#/record" data-nav="record"><span class="ico" aria-hidden="true">✎</span>記録</a>
+  <a href="#/analysis" data-nav="analysis"><span class="ico" aria-hidden="true">〜</span>分析</a>
+  <a href="#/settings" data-nav="settings"><span class="ico" aria-hidden="true">⚙</span>設定</a>
+</nav>
+<noscript><p class="wrap">ゆとりログを使うには JavaScript を有効にしてください。</p></noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
