@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ゆとりログ｜アプリ設計書</title>
+<style>
+:root{
+  --ink:#34433d;--muted:#718078;--paper:#fbfcf9;--panel:#f1f5f0;
+  --green:#668f7a;--green2:#dce9df;--blue:#7299c5;--amber:#d6a45e;
+  --purple:#ad86b8;--line:#dce4dc;--white:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.75}
+header{background:linear-gradient(135deg,#eaf2eb,#f7f3e9);padding:56px 24px 46px;border-bottom:1px solid var(--line)}
+.wrap{max-width:980px;margin:auto;padding:0 24px}
+.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--green);font-weight:700}
+h1{font-size:clamp(32px,5vw,48px);line-height:1.2;margin:12px 0}
+.subtitle{color:#607068;font-size:16px;max-width:680px}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.pill{background:#fff9;border:1px solid #d7e2d8;border-radius:999px;padding:5px 12px;font-size:12px;color:#5c7064}
+main{padding:34px 0 70px}
+nav{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-bottom:32px}
+nav strong{display:block;margin-bottom:8px}
+nav a{color:var(--green);text-decoration:none;margin-right:16px;font-size:13px;display:inline-block}
+section{margin:36px 0;scroll-margin-top:20px}
+h2{font-size:24px;margin:0 0 16px;padding-bottom:10px;border-bottom:2px solid var(--green2)}
+h3{font-size:17px;margin:22px 0 8px}
+p{margin:8px 0 14px}
+.lead{font-size:17px;color:#52635a}
+.card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0}
+.callout{background:#edf4ee;border-left:4px solid var(--green);padding:14px 18px;border-radius:8px;margin:16px 0}
+.warning{background:#fbf4e9;border-left:4px solid var(--amber);padding:14px 18px;border-radius:8px;margin:16px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.kpi{background:var(--panel);border-radius:13px;padding:16px}
+.kpi b{display:block;font-size:18px;color:var(--green)}
+.kpi span{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;background:white}
+th,td{border-bottom:1px solid var(--line);padding:11px 12px;text-align:left;vertical-align:top}
+th{background:#f1f5f0;font-weight:700}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:#edf4ee;color:#557363}
+.tag.future{background:#f8f0e4;color:#8a6a36}
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.flow span{background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:10px;font-size:13px}
+.flow i{font-style:normal;color:var(--muted)}
+.mock{border:1px solid var(--line);border-radius:18px;padding:18px;background:#fff}
+.mocktop{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.mockchart{width:100%;height:auto;display:block;margin:12px 0}
+.legend{display:flex;gap:8px;flex-wrap:wrap}
+.legend span{font-size:12px;border:1px solid var(--line);padding:5px 9px;border-radius:9px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+ul,ol{padding-left:1.35em}
+li{margin:5px 0}
+footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:12px}
+small{color:var(--muted)}
+@media(max-width:600px){.wrap{padding:0 16px}header{padding:40px 16px}nav a{margin:4px 10px 4px 0}th,td{padding:9px 8px;font-size:13px}}
+@media print{body{background:white}header{padding:30px 0}.wrap{max-width:none;padding:0 12px}nav{break-inside:avoid}section,.card,table{break-inside:avoid}a{color:inherit}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">PRODUCT DESIGN DOCUMENT / VERSION 1.0</div>
+    <h1>ゆとりログ</h1>
+    <div class="subtitle">毎日のコンディションを記録し、心身の変化や仕事の負荷に早めに気づくためのセルフチェックアプリ</div>
+    <div class="meta">
+      <span class="pill">設計書 v1.0</span>
+      <span class="pill">更新日：2026年11月8日</span>
+      <span class="pill">対象：スマートフォン優先</span>
+      <span class="pill">状態：画面プロトタイプ段階</span>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+<nav>
+  <strong>目次</strong>
+  <a href="#overview">1. 概要</a><a href="#principles">2. 設計方針</a><a href="#screens">3. 画面構成</a>
+  <a href="#record">4. 記録仕様</a><a href="#analysis">5. 分析仕様</a><a href="#data">6. データ設計</a>
+  <a href="#alerts">7. 気づき支援</a><a href="#roadmap">8. 実装ロードマップ</a><a href="#todo">9. 未決定事項</a>
+</nav>
+
+<section id="overview">
+<h2>1. アプリ概要</h2>
+<p class="lead">「無理なく働き続けられているか」「疲労やストレスが蓄積していないか」を、毎日の短い記録から振り返ることを目的とする。</p>
+<div class="grid">
+  <div class="kpi"><b>毎日3〜5分</b><span>入力の目安時間。負担を増やさない</span></div>
+  <div class="kpi"><b>1〜5段階</b><span>全評価項目を同じ方向で統一</span></div>
+  <div class="kpi"><b>7日・30日</b><span>短期と中期の傾向を確認</span></div>
+  <div class="kpi"><b>セルフチェック</b><span>医療的診断ではなく、自己理解と相談の補助</span></div>
+</div>
+<h3>想定利用シーン</h3>
+<ul>
+<li>勤務終了後や就寝前に、その日の状態を簡単に記録する。</li>
+<li>睡眠・疲労・ストレス・業務量の変化を時系列で確認する。</li>
+<li>週単位で振り返り、負荷の調整や家族・上司・医療機関への相談に役立てる。</li>
+</ul>
+</section>
+
+<section id="principles">
+<h2>2. 基本設計方針</h2>
+<div class="card">
+<h3>デザインコンセプト：Soft / Calm</h3>
+<ul>
+<li>淡いグリーン、ベージュ、ブルーなど低彩度のパステルカラー。</li>
+<li>角丸のカード、余白を広く取ったレイアウト、柔らかい文字表現。</li>
+<li>強い警告色や不安を煽る表現を避け、落ち着いて振り返れる画面にする。</li>
+<li>スマートフォンで片手でも操作しやすいタップ領域を確保する。</li>
+</ul>
+</div>
+<h3>評価値の統一ルール</h3>
+<div class="callout"><b>すべての評価項目で「5＝良好、1＝不調」に統一する。</b><br>疲労・ストレスは「疲労の少なさ」「ストレスの少なさ」として尋ねるか、内部値を反転してグラフ上の方向を統一する。</div>
+<table>
+<tr><th>値</th><th>共通の目安</th></tr>
+<tr><td>5</td><td>とても良い・問題なく過ごせた</td></tr>
+<tr><td>4</td><td>概ね良い・少し気になる程度</td></tr>
+<tr><td>3</td><td>普通・やや負担を感じた</td></tr>
+<tr><td>2</td><td>あまり良くない・負担が大きい</td></tr>
+<tr><td>1</td><td>かなり悪い・強い不調を感じた</td></tr>
+</table>
+<small>各項目の具体的な説明は、利用者が迷わないよう入力画面に短い補足を表示する。数値だけで健康状態を判定しない。</small>
+</section>
+
+<section id="screens">
+<h2>3. 画面構成</h2>
+<p>下部ナビゲーションを基本とし、主要機能へ常に移動できる構成とする。</p>
+<div class="flow"><span>ホーム</span><i>→</i><span>今日の記録</span><i>→</i><span>分析</span><i>→</i><span>設定</span></div>
+<table>
+<tr><th>画面</th><th>役割・主な表示</th></tr>
+<tr><td>ホーム</td><td>今日の記録状況、直近のコンディション、記録開始への導線、簡単な振り返り。</td></tr>
+<tr><td>記録</td><td>睡眠・疲労・気分・ストレス・仕事の負荷などを入力。自由記述は任意。</td></tr>
+<tr><td>分析</td><td>7日間／30日間の推移、複数系列グラフ、項目別平均、傾向メモ。</td></tr>
+<tr><td>設定</td><td>通知時刻、評価項目、データのエクスポート・削除、プライバシー関連。</td></tr>
+</table>
+<h3>画面イメージ：分析画面のグラフ</h3>
+<div class="mock">
+  <div class="mocktop"><b>コンディション推移</b><span class="tag">画面イメージ</span></div>
+  <small>7日間／30日間を切り替え、表示したい系列だけを選択する。</small>
+  <svg class="mockchart" viewBox="0 0 700 250" role="img" aria-label="複数系列のコンディション推移グラフの概念図">
+    <g stroke="#dce4dc" stroke-dasharray="4 5">
+      <line x1="55" y1="25" x2="675" y2="25"/><line x1="55" y1="70" x2="675" y2="70"/>
+      <line x1="55" y1="115" x2="675" y2="115"/><line x1="55" y1="160" x2="675" y2="160"/>
+      <line x1="55" y1="205" x2="675" y2="205"/>
+    </g>
+    <g fill="#718078" font-size="13" text-anchor="end"><text x="43" y="29">5</text><text x="43" y="74">4</text><text x="43" y="119">3</text><text x="43" y="164">2</text><text x="43" y="209">1</text></g>
+    <g fill="#718078" font-size="12" text-anchor="middle"><text x="70" y="232">月</text><text x="168" y="232">火</text><text x="266" y="232">水</text><text x="364" y="232">木</text><text x="462" y="232">金</text><text x="560" y="232">土</text><text x="658" y="232">日</text></g>
+    <polyline points="70,70 168,70 266,115 364,115 462,70 560,70 658,70" fill="none" stroke="#668f7a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="70,115 168,70 266,115 364,160 462,70 560,70 658,25" fill="none" stroke="#7299c5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="70,70 168,70 266,115 364,160 462,115 560,115 658,70" fill="none" stroke="#d6a45e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="70,70 168,115 266,115 364,160 462,115 560,70 658,70" fill="none" stroke="#ad86b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div class="legend">
+    <span><i class="dot" style="background:#668f7a"></i>総合</span>
+    <span><i class="dot" style="background:#7299c5"></i>睡眠</span>
+    <span><i class="dot" style="background:#d6a45e"></i>疲労</span>
+    <span><i class="dot" style="background:#ad86b8"></i>ストレス</span>
+  </div>
+  <small>※概念図。実際の値・系列の表示切り替えは、保存された記録データに連動させる。</small>
+</div>
+</section>
+
+<section id="record">
+<h2>4. 毎日の記録仕様</h2>
+<p>入力負担を抑えるため、必須項目は最小限にし、自由記述や詳細項目は任意とする。所要時間は3〜5分を目安とする。</p>
+<table>
+<tr><th>分類</th><th>項目</th><th>入力形式</th><th>必須案</th></tr>
+<tr><td>睡眠</td><td>睡眠時間</td><td>時間・分</td><td>任意</td></tr>
+<tr><td>睡眠</td><td>睡眠の質</td><td>1〜5</td><td>推奨</td></tr>
+<tr><td>身体</td><td>身体的な調子／疲労の少なさ</td><td>1〜5</td><td>推奨</td></tr>
+<tr><td>精神</td><td>精神的な余裕／疲労の少なさ</td><td>1〜5</td><td>推奨</td></tr>
+<tr><td>気分</td><td>今日の気分</td><td>1〜5</td><td>推奨</td></tr>
+<tr><td>ストレス</td><td>ストレスの少なさ</td><td>1〜5</td><td>推奨</td></tr>
+<tr><td>仕事</td><td>業務量</td><td>少ない／適切／多い</td><td>推奨</td></tr>
+<tr><td>仕事</td><td>負担感・無理をした感覚</td><td>選択式または1〜5</td><td>任意</td></tr>
+<tr><td>仕事</td><td>集中しやすさ</td><td>1〜5</td><td>任意</td></tr>
+<tr><td>支援</td><td>困りごと・相談したいこと</td><td>自由記述</td><td>任意</td></tr>
+<tr><td>生活</td><td>休息・家庭での時間</td><td>選択式／自由記述</td><td>任意</td></tr>
+<tr><td>振り返り</td><td>今日できたこと</td><td>自由記述</td><td>任意</td></tr>
+<tr><td>振り返り</td><td>気になったこと・明日気をつけたいこと</td><td>自由記述</td><td>任意</td></tr>
+</table>
+<h3>記録時の操作要件</h3>
+<ul>
+<li>選択式の評価はタップ数を少なくし、選択状態を視覚的に明確にする。</li>
+<li>入力途中の一時保存、保存済み記録の編集を可能にする。</li>
+<li>未入力項目があっても、必須項目を満たせば保存できる。</li>
+<li>同じ日付の記録は原則1件とし、後から編集できる。</li>
+<li>体調が悪い日でも記録を強制しない。未記録を失敗として扱わない。</li>
+</ul>
+</section>
+
+<section id="analysis">
+<h2>5. 分析機能仕様</h2>
+<h3>5.1 コンディション推移グラフ</h3>
+<ul>
+<li>総合・睡眠・疲労・ストレスなど複数系列を1つの折れ線グラフに重ねて表示する。</li>
+<li>系列ごとに表示／非表示を切り替えられる。</li>
+<li>表示期間は7日間／30日間を切り替えられる。</li>
+<li>縦軸は1〜5で固定し、5が良好、1が不調となるよう統一する。</li>
+<li>日付または期間単位の値を確認できる。未記録日は欠損として扱い、ゼロで補完しない。</li>
+<li>系列の色と凡例を固定し、画面間で同じ色を使う。</li>
+</ul>
+<h3>5.2 分析カード</h3>
+<table>
+<tr><th>分析項目</th><th>表示内容</th><th>目的</th></tr>
+<tr><td>総合コンディション</td><td>選択期間の平均・前期間との差</td><td>全体の変化を把握</td></tr>
+<tr><td>項目別平均</td><td>睡眠・疲労・気分・ストレスの平均</td><td>変化の大きい項目を把握</td></tr>
+<tr><td>業務量との関係</td><td>業務量区分ごとのコンディション平均</td><td>仕事の負荷との関連を確認</td></tr>
+<tr><td>睡眠と疲労</td><td>両系列の時系列比較</td><td>睡眠と翌日の疲労の変化を確認</td></tr>
+<tr><td>休日の回復</td><td>休日の前後で各項目を比較</td><td>休息で回復できているかを確認</td></tr>
+<tr><td>記録状況</td><td>記録日数・記録率</td><td>継続状況を確認</td></tr>
+</table>
+<h3>5.3 期間別振り返り</h3>
+<ul>
+<li>7日間：直近の変化、急な落ち込み、連続した変化を確認。</li>
+<li>30日間：本人の通常時の水準、週ごとの変化、負荷との関連を確認。</li>
+<li>将来的には週次レポートとして、良かった点・気になる変化・次週に試すことを簡潔に提示する。</li>
+</ul>
+<div class="warning"><b>分析上の注意：</b>相関が見られても因果関係を断定しない。記録件数が少ない場合は「データ不足」と表示し、無理に傾向を判定しない。</div>
+</section>
+
+<section id="data">
+<h2>6. データ設計（実装時の基本案）</h2>
+<p>記録と分析を分離し、分析値は保存済みの記録から都度算出できる構成を基本とする。</p>
+<table>
+<tr><th>データ</th><th>主なフィールド案</th><th>説明</th></tr>
+<tr><td>DailyRecord</td><td>id, record_date, created_at, updated_at</td><td>日次記録の識別情報</td></tr>
+<tr><td>Condition</td><td>sleep_quality, physical_condition, mental_condition, mood, stress_level</td><td>1〜5の評価値。内部表現は5が良好</td></tr>
+<tr><td>Workload</td><td>workload_level, concentration, burden, overexertion</td><td>業務量・集中・負担感</td></tr>
+<tr><td>LifeNote</td><td>rest_note, family_note, achievement_note, concern_note, tomorrow_note</td><td>任意の自由記述</td></tr>
+<tr><td>AppSettings</td><td>reminder_time, enabled_metrics, theme, export_preferences</td><td>通知・表示・ユーザー設定</td></tr>
+</table>
+<h3>保存・データ管理要件</h3>
+<ul>
+<li>日付を基準に記録を検索し、編集・削除できる。</li>
+<li>データのバックアップ／エクスポート手段を用意する。</li>
+<li>個人の健康・勤務に関する情報を扱うため、アクセス制御と通信・保存時の保護を設計する。</li>
+<li>分析画面は実データのみを使用し、サンプルデータは明確に区別する。</li>
+<li>データ保存先、同期方式、認証方式は実装前に決定する。</li>
+</ul>
+</section>
+
+<section id="alerts">
+<h2>7. 変化への気づき支援</h2>
+<p>将来的に、次のような変化を検出し、本人が振り返るきっかけを提示する。</p>
+<table>
+<tr><th>検出候補</th><th>表示例</th></tr>
+<tr><td>精神的な余裕が数日続けて低下</td><td>「ここ数日、精神的な余裕が下がっています。負担になっていることはありますか？」</td></tr>
+<tr><td>睡眠の質が継続して低下</td><td>「睡眠の質に変化が見られます。就寝前の過ごし方や休息を振り返ってみましょう。」</td></tr>
+<tr><td>業務量が多く、ストレスも高い</td><td>「業務量とストレスが重なっています。仕事の優先順位や相談先を確認してみましょう。」</td></tr>
+<tr><td>休日後も回復が見られない</td><td>「休息後も疲労が続いているようです。無理を続けず、必要に応じて周囲や専門家に相談しましょう。」</td></tr>
+</table>
+<div class="callout">アラートは診断・予測を断定するものではない。本人の気づきと、休息・業務調整・相談を支援するための参考情報として扱う。</div>
+</section>
+
+<section id="roadmap">
+<h2>8. 実装ロードマップ</h2>
+<table>
+<tr><th>段階</th><th>実装内容</th><th>完了条件</th></tr>
+<tr><td>Phase 1<br>記録基盤</td><td>記録フォーム、日付管理、保存・編集・削除、データモデル</td><td>入力した内容が再起動後も保持され、履歴から確認できる</td></tr>
+<tr><td>Phase 2<br>分析画面</td><td>7日／30日切替、複数系列グラフ、系列表示切替、平均値</td><td>実際の記録データに基づくグラフが表示される</td></tr>
+<tr><td>Phase 3<br>関連分析</td><td>業務量とストレス、睡眠と疲労、休日回復の比較</td><td>データ件数を考慮し、根拠となる期間・件数を表示できる</td></tr>
+<tr><td>Phase 4<br>振り返り支援</td><td>週次レポート、連続変化の検出、気づきメッセージ</td><td>誤解を招かない表現で、本人が行動を考える材料を提示できる</td></tr>
+<tr><td>Phase 5<br>運用改善</td><td>エクスポート、バックアップ、通知、アクセシビリティ改善</td><td>日常的に安心して継続利用できる</td></tr>
+</table>
+</section>
+
+<section id="todo">
+<h2>9. 未決定事項・次に決めること</h2>
+<ol>
+<li><b>利用環境：</b>スマートフォンのWebアプリ（PWA）として作るか、ネイティブアプリにするか。</li>
+<li><b>保存先：</b>端末内のみ、クラウド同期あり、または両方を選べる方式にするか。</li>
+<li><b>認証：</b>個人利用を前提に、ログインを設けるか。</li>
+<li><b>必須項目：</b>毎日の入力負担と分析上の有用性を見ながら確定する。</li>
+<li><b>総合スコア：</b>単純平均にするか、各項目の重み付けを行うか。初期版では単純平均または総合自己評価を優先し、算出方法を明示する。</li>
+<li><b>通知：</b>毎晩21時のチェック促進を利用するか、アプリ内通知と連携するか。</li>
+<li><b>既存チェックシート：</b>復職トライアルで使っていた項目を確認し、重複や不足を整理する。</li>
+</ol>
+<div class="warning"><b>実装上の重要事項：</b>現在までの画面は操作感を確認するためのUIプロトタイプであり、記録の永続保存・ユーザー間認証・実データ分析は未実装。今回の設計書は、会話で合意した仕様と今後の実装案をまとめたもので、技術方式の最終決定書ではない。</div>
+</section>
+</main>
+<footer><div class="wrap">ゆとりログ｜アプリ設計書 v1.0　・　2026年11月8日<br>本書は現時点の会話内容をもとにした初期設計資料です。実装時に要件を確認・更新してください。</div></footer>
+</body>
+</html>
